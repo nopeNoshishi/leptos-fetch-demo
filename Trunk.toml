@@ -1,0 +1,22 @@
+trunk-version = "0.21.14"
+
+[build]
+target = "index.html"
+release = false
+dist = "dist"
+public_url = "/"
+filehash = true
+
+[watch]
+watch =  ["src"]
+ignore = []
+
+[serve]
+addresses = ["127.0.0.1"]
+port = 8080
+open = false
+no_spa = false
+
+[clean]
+dist = "dist"
+cargo = false
