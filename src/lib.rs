@@ -1,22 +1,31 @@
+#![warn(missing_docs)]
+#![doc = include_str!("../README.md")]
+
 pub mod api;
 mod components;
-mod resource;
+pub mod resource;
 
-use components::{FetchByLeptosFetch, FetchByLocalResource};
+use components::{FetchByLeptosFetch, FetchByLeptosFetchV2, FetchByLocalResource};
 use leptos::prelude::*;
-use leptos_fetch::QueryClient;
+use leptos_fetch::{QueryClient, QueryDevtools};
 
+/// Example application using Leptos Fetch and LocalResource
 pub fn example_app() -> impl IntoView {
     // Provide the QueryClient to the context
-    QueryClient::new().provide();
+    let client = QueryClient::new().provide();
 
     // Hooks
     let (mount_lr, fetch_count_lr) = use_count_for_fetch();
     let (mount_lf, fetch_count_lf) = use_count_for_fetch();
+    let (mount_lf2, fetch_count_lf2) = use_count_for_fetch();
 
     // Reactive value
     let selected_id = RwSignal::new("initial_id".to_string());
-    let total_count = Signal::derive(move || fetch_count_lr.get() + fetch_count_lf.get());
+    let total_count =
+        Signal::derive(move || fetch_count_lr.get() + fetch_count_lf.get() + fetch_count_lf2.get());
+
+    // Provide the count signals to `FetchByLeptosFetchV2``
+    provide_context(fetch_count_lf2);
 
     view! {
         <div class="min-h-screen bg-gray-50 text-gray-900">
@@ -35,6 +44,9 @@ pub fn example_app() -> impl IntoView {
                         </span>
                         <span class="badge-outline px-3 py-1">
                             "leptos-fetch: " {move || fetch_count_lf.get()}
+                        </span>
+                        <span class="badge-outline px-3 py-1">
+                            "leptos-fetch V2: " {move || fetch_count_lf2.get()}
                         </span>
                     </div>
                 </div>
@@ -141,19 +153,49 @@ pub fn example_app() -> impl IntoView {
                             }}
                         </div>
                     </div>
+
+                    <div class="card">
+                        <header class="flex items-center justify-between">
+                            <h2 class="text-sm font-semibold">"Leptos Fetch V2"</h2>
+                            <button
+                                class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50"
+                                on:click=move |_| {
+                                    mount_lf2.update(|v| *v = !*v);
+                                }
+                            >
+                                {move || if mount_lf2.get() { "Unmount" } else { "Mount" }}
+                            </button>
+                        </header>
+
+                        <div class="p-4">
+                            <p class="mb-3 text-sm text-gray-600">
+                                "Fetch Count: " <strong>{move || fetch_count_lf.get()}</strong>
+                            </p>
+
+                            {move || {
+                                if mount_lf2.get() {
+                                    view! { <FetchByLeptosFetchV2 selected_id=selected_id /> }
+                                        .into_any()
+                                } else {
+                                    view! {
+                                        <p class="text-sm text-gray-500">
+                                            "leptos-fetch V2 is not mounted"
+                                        </p>
+                                    }
+                                        .into_any()
+                                }
+                            }}
+                        </div>
+                    </div>
                 </div>
             </main>
 
-            {#[cfg(feature = "development")]
-            {
-                use leptos_fetch::{QueryClient, QueryDevtools};
-                let client: QueryClient = expect_context();
-                view! { <QueryDevtools client=client /> }
-            }}
+            <QueryDevtools client=client />
         </div>
     }
 }
 
+/// Custom hook to manage fetch count and mount state
 fn use_count_for_fetch() -> (RwSignal<bool>, RwSignal<u32>) {
     let mount = RwSignal::new(false);
     let fetch_count = RwSignal::new(0);

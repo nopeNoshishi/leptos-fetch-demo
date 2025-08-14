@@ -6,7 +6,7 @@ This is a simple demo example of using Leptos Fetch to manage data fetching in a
 
 ```sh
 # Need to install `trunk` for build
-trunk serve --features development
+trunk serve
 ```
 
 ## Example Video

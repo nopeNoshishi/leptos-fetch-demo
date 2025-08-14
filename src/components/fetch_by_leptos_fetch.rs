@@ -6,6 +6,7 @@ use leptos::prelude::*;
 use leptos_fetch::{QueryClient, QueryOptions, QueryScope};
 use std::time::Duration;
 
+/// Component using Leptos Fetch
 #[component]
 pub fn FetchByLeptosFetch(
     selected_id: RwSignal<String>,
@@ -42,44 +43,43 @@ pub fn FetchByLeptosFetch(
             view! { <p>"Loading..."</p> }
         }>
             <div>
-                <div>
-                    <p>"Fetched Data"</p>
-                    {move || {
-                        data.get()
-                            .map(|api_data| {
-                                view! {
-                                    <div>
-                                        <p>"ID: " {api_data.id}</p>
-                                        <p>"Name: " {api_data.name}</p>
-                                    </div>
-                                }
-                            })
-                    }}
-                    <div class="flex gap-x-2 py-2">
-                        <button
-                            class="btn"
-                            on:click=move |_| {
-                                refetch();
+                <p>"Fetched Data"</p>
+                {move || {
+                    data.get()
+                        .map(|api_data| {
+                            view! {
+                                <div>
+                                    <p>"ID: " {api_data.id}</p>
+                                    <p>"Name: " {api_data.name}</p>
+                                </div>
                             }
-                        >
-                            "Refetch"
-                        </button>
+                        })
+                }}
+                <div class="flex gap-x-2 py-2">
+                    <button
+                        class="btn"
+                        on:click=move |_| {
+                            refetch();
+                        }
+                    >
+                        "Refetch"
+                    </button>
 
-                        <button
-                            class="btn"
-                            on:click=move |_| {
-                                force_refetch();
-                            }
-                        >
-                            "Force Refetch"
-                        </button>
-                    </div>
+                    <button
+                        class="btn"
+                        on:click=move |_| {
+                            force_refetch();
+                        }
+                    >
+                        "Force Refetch"
+                    </button>
                 </div>
             </div>
         </Suspense>
     }
 }
 
+/// Component using Leptos Fetch and [`crate::resource::WrapperLocalResource`]
 #[component]
 pub fn FetchByLeptosFetchV2(selected_id: RwSignal<String>) -> impl IntoView {
     let data = data_resource(selected_id.into());
@@ -93,38 +93,34 @@ pub fn FetchByLeptosFetchV2(selected_id: RwSignal<String>) -> impl IntoView {
             view! { <p>"Loading..."</p> }
         }>
             <div>
-                <div>
-                    <p>"Fetched Data"</p>
-                    {move || {
-                        data.resource
-                            .get()
-                            .map(|api_data| {
-                                match api_data {
-                                    Ok(data) => {
-                                        view! {
-                                            <div>
-                                                <p>"ID: " {data.id}</p>
-                                                <p>"Name: " {data.name}</p>
-                                            </div>
-                                        }
-                                            .into_any()
+                <p>"Fetched Data"</p>
+                {move || {
+                    data.resource
+                        .get()
+                        .map(|api_data| {
+                            match api_data {
+                                Ok(data) => {
+                                    view! {
+                                        <div>
+                                            <p>"ID: " {data.id}</p>
+                                            <p>"Name: " {data.name}</p>
+                                        </div>
                                     }
-                                    Err(_) => {
-                                        view! { <p class="text-red-500">"Error"</p> }.into_any()
-                                    }
+                                        .into_any()
                                 }
-                            })
-                    }}
-                    <div class="flex gap-x-2 py-2">
-                        <button
-                            class="btn"
-                            on:click=move |_| {
-                                force_refetch();
+                                Err(_) => view! { <p class="text-red-500">"Error"</p> }.into_any(),
                             }
-                        >
-                            "Force Refetch"
-                        </button>
-                    </div>
+                        })
+                }}
+                <div class="flex gap-x-2 py-2">
+                    <button
+                        class="btn"
+                        on:click=move |_| {
+                            force_refetch();
+                        }
+                    >
+                        "Force Refetch"
+                    </button>
                 </div>
             </div>
         </Suspense>
