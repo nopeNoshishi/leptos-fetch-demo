@@ -169,7 +169,7 @@ pub fn example_app() -> impl IntoView {
 
                         <div class="p-4">
                             <p class="mb-3 text-sm text-gray-600">
-                                "Fetch Count: " <strong>{move || fetch_count_lf.get()}</strong>
+                                "Fetch Count: " <strong>{move || fetch_count_lf2.get()}</strong>
                             </p>
 
                             {move || {
