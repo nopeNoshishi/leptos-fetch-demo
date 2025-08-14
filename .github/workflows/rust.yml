@@ -1,0 +1,61 @@
+name: Rust CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  
+      - name: Setup Rust
+        run: |
+          rustup target add wasm32-unknown-unknown
+
+      - name: Check
+        run: |
+          cargo check --all-features
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  
+      - name: Setup Rust
+        run: |
+          rustup target add wasm32-unknown-unknown
+
+      - name: Install leptosfmt
+        uses: taiki-e/install-action@d188da0a65bc6c80011567688127bddc8be0ca24 # v2.56.21
+        with:
+          tool: leptosfmt
+
+      - name: leptos fmt
+        run: |
+          leptosfmt . --check
+
+      - name: Cargo fmt 
+        run: |
+          cargo fmt --all --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  
+      - name: Setup Rust
+        run: |
+          rustup target add wasm32-unknown-unknown
+
+      - name: Clippy
+        run: |
+          cargo clippy -- --deny warnings
