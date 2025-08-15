@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 console_error_panic_hook = { version = "0.1.7" }
 leptos = { version = "0.8.6", features = [ "csr" ] }
-leptos-fetch = { version =  "0.4.4", features = [ "devtools" ] }
+leptos-fetch = { version =  "0.4.4", features = [ "devtools-always" ] }
 serde = { version = "1.0", features = [ "derive" ] }
 
 [features]
