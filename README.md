@@ -9,6 +9,8 @@ This is a simple demo example of using Leptos Fetch to manage data fetching in a
 trunk serve
 ```
 
+You can try to see the demo at https://nopenoshishi.github.io/leptos-fetch-demo/.
+
 ## Example Video
 
 ### Leptos Only
