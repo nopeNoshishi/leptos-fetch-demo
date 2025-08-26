@@ -28,7 +28,7 @@ where
     /// Constructs a new [`WrapperLocalResource`]
     pub fn new<F, Fu>(action_fn: F, query_options: QueryOptions, keyer: Signal<String>) -> Self
     where
-        F: Fn(Client) -> Fu + 'static,
+        F: Fn(Client, String) -> Fu + 'static,
         Fu: Future<Output = Result<O, ClientError>> + 'static,
     {
         // hooks
@@ -38,11 +38,11 @@ where
         let action_fn = Arc::new(action_fn);
 
         // Set up the query scope
-        let query_scope = QueryScopeLocal::new(move |_key| {
+        let query_scope = QueryScopeLocal::new(move |key| {
             fetch_count_lf2.update(|count| *count += 1);
 
             let client = Client::new();
-            action_fn(client)
+            action_fn(client, key)
         })
         .with_options(query_options);
 
@@ -71,7 +71,7 @@ where
 /// Creates a data resource for `ApiData`
 pub fn data_resource(id: Signal<String>) -> WrapperLocalResource<ApiData> {
     WrapperLocalResource::new(
-        move |client| async move { client.fetch_data(id.get_untracked()).await },
+        move |client, key| async move { client.fetch_data(key).await },
         QueryOptions::default(),
         id,
     )
