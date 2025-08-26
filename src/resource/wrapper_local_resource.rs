@@ -35,14 +35,14 @@ where
         let fetch_count_lf2: RwSignal<u32> = expect_context();
         let query_client: QueryClient = expect_context();
 
-        let action_fn = StoredValue::new_local(Arc::new(action_fn));
+        let action_fn = Arc::new(action_fn);
 
         // Set up the query scope
         let query_scope = QueryScopeLocal::new(move |_key| {
             fetch_count_lf2.update(|count| *count += 1);
 
             let client = Client::new();
-            action_fn.with_value(|f| f(client))
+            action_fn(client)
         })
         .with_options(query_options);
 
